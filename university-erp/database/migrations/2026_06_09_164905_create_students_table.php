@@ -23,7 +23,7 @@ return new class extends Migration
         $table->enum('gender', ['male', 'female', 'other'])->nullable();
         $table->text('address')->nullable();
         $table->string('photo')->nullable();
-        $table->year('session');
+        $table->string('session');
         $table->integer('semester')->default(1);
         $table->enum('status', ['active', 'inactive', 'graduated'])->default('active');
         $table->timestamps();

@@ -2,101 +2,160 @@
 
 @section('content')
 
-<a href="{{ route('students.create') }}"
-   class="btn btn-primary mb-3">
-Add Student
-</a>
-
-<form method="GET"
-      class="mb-3">
-
-<div class="row">
-
-<div class="col-md-4">
-
-<input type="text"
-       name="search"
-       value="{{ request('search') }}"
-       class="form-control"
-       placeholder="Search Student">
-
+<div class="card mb-3 shadow-sm">
+    <div class="card-body">
+        <h5>
+            Total Students:
+            <span class="badge bg-primary">
+                {{ $students->total() }}
+            </span>
+        </h5>
+    </div>
 </div>
 
-<div class="col-md-2">
-
-<button class="btn btn-primary">
-Search
-</button>
-
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ route('students.create') }}"
+       class="btn btn-primary">
+        Add Student
+    </a>
 </div>
 
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show">
+    {{ session('success') }}
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert">
+    </button>
 </div>
-
-</form>
-
-
-<table class="table table-bordered">
-
-<tr>
-<th>ID</th>
-<th>Photo</th>
-<th>Name</th>
-<th>Student ID</th>
-<th>Department</th>
-<th>Action</th>
-</tr>
-
-@foreach($students as $student)
-
-<tr>
-
-<td>{{ $student->id }}</td>
-
-<td>
-@if($student->photo)
-<img src="{{ asset('storage/'.$student->photo) }}"
-     width="50">
 @endif
-</td>
 
-<td>{{ $student->name }}</td>
+<form method="GET" class="mb-4">
+    <div class="input-group">
+        <input type="text"
+               name="search"
+               class="form-control"
+               placeholder="Search by Name or Student ID"
+               value="{{ request('search') }}">
 
-<td>{{ $student->student_id }}</td>
-
-<td>{{ $student->department->name ?? '' }}</td>
-
-<td>
-<a href="{{ route('students.show',$student->id) }}"
-   class="btn btn-info btn-sm">
-View
-</a>
-
-<a href="{{ route('students.edit',$student->id) }}"
-   class="btn btn-warning btn-sm">
-Edit
-</a>
-
-<form method="POST"
-      action="{{ route('students.destroy',$student->id) }}"
-      style="display:inline">
-
-@csrf
-@method('DELETE')
-
-<button class="btn btn-danger btn-sm">
-Delete
-</button>
-
+        <button class="btn btn-primary">
+            Search
+        </button>
+    </div>
 </form>
 
-</td>
+<div class="table-responsive">
+<table class="table table-bordered table-hover align-middle">
 
-</tr>
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Student ID</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th width="220">Action</th>
+        </tr>
+    </thead>
 
-@endforeach
+    <tbody>
+
+    @forelse($students as $student)
+
+        <tr>
+
+            <td>{{ $loop->iteration }}</td>
+
+            <td>
+                @if($student->photo)
+                    <img src="{{ asset('storage/'.$student->photo) }}"
+                         width="60"
+                         height="60"
+                         class="rounded-circle border shadow-sm">
+                @else
+                    <img src="{{ asset('images/default-user.png') }}"
+                         width="60"
+                         height="60"
+                         class="rounded-circle border shadow-sm">
+                @endif
+            </td>
+
+            <td>{{ $student->name }}</td>
+
+            <td>{{ $student->student_id }}</td>
+
+            <td>{{ $student->department->name ?? 'N/A' }}</td>
+
+            <td>
+                @if($student->status == 'active')
+                    <span class="badge bg-success">
+                        Active
+                    </span>
+                @elseif($student->status == 'inactive')
+                    <span class="badge bg-warning text-dark">
+                        Inactive
+                    </span>
+                @else
+                    <span class="badge bg-secondary">
+                        Graduated
+                    </span>
+                @endif
+            </td>
+
+            <td>
+                {{ $student->created_at->format('d M Y') }}
+            </td>
+
+            <td>
+
+                <a href="{{ route('students.show',$student->id) }}"
+                   class="btn btn-info btn-sm">
+                    👁 View
+                </a>
+
+                <a href="{{ route('students.edit',$student->id) }}"
+                   class="btn btn-warning btn-sm">
+                    ✏ Edit
+                </a>
+
+                <form method="POST"
+                      action="{{ route('students.destroy',$student->id) }}"
+                      style="display:inline;">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure to delete this student?')">
+                        🗑 Delete
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+    @empty
+
+        <tr>
+            <td colspan="8" class="text-center">
+                No Students Found
+            </td>
+        </tr>
+
+    @endforelse
+
+    </tbody>
 
 </table>
+</div>
 
-{{ $students->links() }}
+<div class="mt-3">
+    {{ $students->appends(request()->query())->links() }}
+</div>
 
 @endsection

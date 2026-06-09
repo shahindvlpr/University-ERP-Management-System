@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
@@ -51,16 +52,18 @@ class StudentController extends Controller
         }
 
         Student::create([
-            'department_id' => $request->department_id,
-            'student_id' => $request->student_id,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'session' => $request->session,
-            'semester' => $request->semester,
-            'photo' => $photo,
-            'status' => 'active'
-        ]);
+        'user_id' => Auth::id(),
+
+        'department_id' => $request->department_id,
+        'student_id' => $request->student_id,
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone' => $request->phone,
+        'session' => $request->session,
+        'semester' => $request->semester,
+        'photo' => $photo,
+        'status' => 'active'
+    ]);
 
         return redirect()
             ->route('students.index')

@@ -25,5 +25,7 @@ class DashboardController extends Controller
         $recent_notices = Notice::latest()->take(5)->get();
 
         return view('dashboard', compact('stats', 'recent_notices'));
+        
+        $recent_students = Student::latest()->take(5)->get();
     }
 }
