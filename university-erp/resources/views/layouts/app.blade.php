@@ -275,6 +275,14 @@
             Results
         </a>
 
+        <a href="{{ route('routines.index') }}"
+        class="nav-link {{ request()->routeIs('routines.*') ? 'active' : '' }}">
+
+            <i class="bi bi-calendar-week"></i>
+            Routine
+
+        </a>
+
         @endrole
 
     </nav>

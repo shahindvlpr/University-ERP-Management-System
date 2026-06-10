@@ -12,6 +12,7 @@ use App\Http\Controllers\FeeController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\RoutineController;
 
 // Auth
 Route::get('/',      [LoginController::class, 'showLogin'])->name('login');
@@ -36,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('reports/fees/pdf', [ReportController::class, 'feesPdf'])->name('reports.fees.pdf');
         Route::get('reports/results/pdf', [ReportController::class, 'resultsPdf'])->name('reports.results.pdf');
         Route::resource('enrollments',EnrollmentController::class);
+        Route::resource('routines', RoutineController::class);
     });
 
     // Admin + Teacher

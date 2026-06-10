@@ -19,17 +19,11 @@ class Routine extends Model
         'status'
     ];
 
-    /**
-     * Course Relationship
-     */
     public function course()
     {
         return $this->belongsTo(Course::class);
     }
 
-    /**
-     * Teacher Relationship
-     */
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
