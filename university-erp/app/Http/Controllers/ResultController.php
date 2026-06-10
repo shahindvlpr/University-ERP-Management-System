@@ -114,7 +114,18 @@ class ResultController extends Controller
     }
 
     public function update(Request $request, Result $result)
-    {
+        {
+        $request->validate([
+        'student_id' => 'required|exists:students,id',
+        'course_id' => 'required|exists:courses,id',
+        'midterm_marks' => 'required|numeric|min:0|max:30',
+        'final_marks' => 'required|numeric|min:0|max:50',
+        'assignment_marks' => 'required|numeric|min:0|max:20',
+        'session' => 'required',
+        'semester' => 'required'
+        ]);
+
+
         $total =
             $request->midterm_marks +
             $request->final_marks +
@@ -137,8 +148,10 @@ class ResultController extends Controller
 
         return redirect()
             ->route('results.index')
-            ->with('success','Result Updated Successfully');
-    }
+            ->with('success', 'Result Updated Successfully');
+
+
+        }
 
     public function destroy(Result $result)
     {
