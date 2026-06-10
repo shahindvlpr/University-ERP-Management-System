@@ -44,4 +44,8 @@ class Course extends Model
     {
         return $this->hasMany(Result::class);
     }
+    public function routines()
+{
+    return $this->hasMany(Routine::class);
+}
 }

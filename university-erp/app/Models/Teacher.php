@@ -38,4 +38,8 @@ class Teacher extends Model
     {
         return $this->hasMany(Course::class);
     }
+    public function routines()
+{
+    return $this->hasMany(Routine::class);
+}
 }

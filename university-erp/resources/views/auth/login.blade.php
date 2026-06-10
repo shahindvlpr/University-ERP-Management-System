@@ -41,10 +41,6 @@
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg w-100">Login</button>
                     </form>
-                    <hr>
-                    <small class="text-muted d-block text-center">
-                        Admin: admin@university.com / admin123
-                    </small>
                 </div>
             </div>
         </div>
