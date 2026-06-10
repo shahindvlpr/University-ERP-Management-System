@@ -331,7 +331,14 @@
 
 </a>
 
+<a href="{{ route('student.dashboard') }}"
+   class="nav-link">
 
+    <i class="bi bi-person-circle"></i>
+
+    Student Portal
+
+</a>
 
 
 

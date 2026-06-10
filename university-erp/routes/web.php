@@ -19,6 +19,7 @@ use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamMarkController;
 use App\Http\Controllers\TranscriptController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\StudentPortalController;
 
 
 // Auth
@@ -67,4 +68,40 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('attendance', AttendanceController::class);
         Route::resource('results', ResultController::class);
     });
+
+Route::middleware(['auth'])
+->group(function () {
+
+    Route::get(
+        '/student/dashboard',
+        [StudentPortalController::class,'dashboard']
+    )->name('student.dashboard');
+
+});
+
+Route::get(
+    '/student/attendance',
+    [StudentPortalController::class,'attendance']
+)->name('student.attendance');
+
+Route::get(
+    '/student/results',
+    [StudentPortalController::class,'results']
+)->name('student.results');
+
+Route::get(
+    '/student/courses',
+    [StudentPortalController::class,'courses']
+)->name('student.courses');
+
+Route::get(
+    '/student/fees',
+    [StudentPortalController::class,'fees']
+)->name('student.fees');
+
+Route::get(
+    '/student/transcript',
+    [StudentPortalController::class,'transcript']
+)->name('student.transcript');
+
 });
