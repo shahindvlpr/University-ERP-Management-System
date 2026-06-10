@@ -2,63 +2,87 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\Department;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $courses = Course::with(['department','teacher'])
+            ->when($request->search, function ($query) use ($request) {
+                $query->where('name','like','%'.$request->search.'%')
+                      ->orWhere('code','like','%'.$request->search.'%');
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('courses.index', compact('courses'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $departments = Department::all();
+        $teachers = Teacher::all();
+
+        return view(
+            'courses.create',
+            compact('departments','teachers')
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'department_id' => 'required',
+            'teacher_id' => 'required',
+            'name' => 'required',
+            'code' => 'required|unique:courses',
+            'credit_hours' => 'required|numeric',
+            'semester' => 'required|numeric',
+            'status' => 'required'
+        ]);
+
+        Course::create($request->all());
+
+        return redirect()
+            ->route('courses.index')
+            ->with('success','Course Added Successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Course $course)
     {
-        //
+        return view('courses.show', compact('course'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Course $course)
     {
-        //
+        $departments = Department::all();
+        $teachers = Teacher::all();
+
+        return view(
+            'courses.edit',
+            compact('course','departments','teachers')
+        );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Course $course)
     {
-        //
+        $course->update($request->all());
+
+        return redirect()
+            ->route('courses.index')
+            ->with('success','Course Updated Successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Course $course)
     {
-        //
+        $course->delete();
+
+        return redirect()
+            ->route('courses.index')
+            ->with('success','Course Deleted Successfully');
     }
 }
