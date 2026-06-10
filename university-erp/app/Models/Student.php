@@ -58,4 +58,15 @@ class Student extends Model
 {
     return $this->hasMany(BookIssue::class);
 }
+public function certificates()
+{
+    return $this->hasMany(
+        Certificate::class
+    );
+}
+
+
+
+
+
 }

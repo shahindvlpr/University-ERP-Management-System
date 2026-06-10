@@ -17,12 +17,24 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookIssueController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamMarkController;
+use App\Http\Controllers\TranscriptController;
+use App\Http\Controllers\CertificateController;
 
 
 // Auth
 Route::get('/',      [LoginController::class, 'showLogin'])->name('login');
 Route::post('/login',[LoginController::class, 'login']);
 Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
+
+Route::get(
+    '/transcripts',
+    [TranscriptController::class,'index']
+)->name('transcripts.index');
+
+Route::get(
+    '/transcripts/{student}',
+    [TranscriptController::class,'show']
+)->name('transcripts.show');
 
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
@@ -47,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('book-issues',BookIssueController::class);
         Route::resource('exams', ExamController::class);
         Route::resource('exam-marks',ExamMarkController::class);
+        Route::resource('certificates',CertificateController::class);
     });
 
     // Admin + Teacher

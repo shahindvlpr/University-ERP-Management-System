@@ -314,8 +314,22 @@
 
 </a>
 
+<a href="{{ route('transcripts.index') }}"
+   class="nav-link">
 
+    <i class="bi bi-file-earmark-text"></i>
 
+    Transcript
+
+</a>
+<a href="{{ route('certificates.index') }}"
+   class="nav-link">
+
+    <i class="bi bi-patch-check-fill"></i>
+
+    Certificates
+
+</a>
 
 
 
