@@ -10,18 +10,18 @@ class FeeInvoice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id',
-        'invoice_no',
-        'amount',
-        'paid_amount',
-        'due_amount',
-        'due_date',
-        'status',
-        'fee_type',
-        'session',
-        'semester',
-        'remarks'
-    ];
+    'student_id',
+    'invoice_no',
+    'amount',
+    'paid_amount',
+    'due_amount',
+    'due_date',
+    'status',
+    'fee_type',
+    'session',
+    'semester',
+    'remarks'
+];
 
     protected $casts = [
         'due_date' => 'date'
