@@ -69,13 +69,22 @@ class CourseController extends Controller
     }
 
     public function update(Request $request, Course $course)
-    {
-        $course->update($request->all());
+{
+    $course->update([
+        'department_id' => $request->department_id,
+        'teacher_id' => $request->teacher_id,
+        'name' => $request->name,
+        'code' => $request->code,
+        'description' => $request->description,
+        'credit_hours' => $request->credit_hours,
+        'semester' => $request->semester,
+        'status' => $request->status,
+    ]);
 
-        return redirect()
-            ->route('courses.index')
-            ->with('success','Course Updated Successfully');
-    }
+    return redirect()
+        ->route('courses.index')
+        ->with('success','Course Updated Successfully');
+}
 
     public function destroy(Course $course)
     {
