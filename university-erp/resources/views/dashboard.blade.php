@@ -18,19 +18,17 @@
 
 <!-- Statistics Cards -->
 
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-4">
 
 
-<div class="col-lg-3 col-md-6">
-    <div class="stat-card p-4 text-white"
-         style="background:linear-gradient(135deg,#1565c0,#42a5f5);">
+<div class="col">
+    <div class="stat-card p-4 text-white h-100"
+         style="background:linear-gradient(135deg,#1565c0,#42a5f5); border-radius:15px;">
 
         <div class="d-flex justify-content-between align-items-center">
 
             <div>
-                <h2 class="fw-bold mb-0">
-                    {{ $stats['students'] }}
-                </h2>
+                <h2 class="fw-bold mb-0">{{ $stats['students'] }}</h2>
                 <small>Total Students</small>
             </div>
 
@@ -41,16 +39,14 @@
     </div>
 </div>
 
-<div class="col-lg-3 col-md-6">
-    <div class="stat-card p-4 text-white"
-         style="background:linear-gradient(135deg,#2e7d32,#66bb6a);">
+<div class="col">
+    <div class="stat-card p-4 text-white h-100"
+         style="background:linear-gradient(135deg,#2e7d32,#66bb6a); border-radius:15px;">
 
         <div class="d-flex justify-content-between align-items-center">
 
             <div>
-                <h2 class="fw-bold mb-0">
-                    {{ $stats['teachers'] }}
-                </h2>
+                <h2 class="fw-bold mb-0">{{ $stats['teachers'] }}</h2>
                 <small>Total Teachers</small>
             </div>
 
@@ -61,16 +57,14 @@
     </div>
 </div>
 
-<div class="col-lg-3 col-md-6">
-    <div class="stat-card p-4 text-white"
-         style="background:linear-gradient(135deg,#ef6c00,#ff9800);">
+<div class="col">
+    <div class="stat-card p-4 text-white h-100"
+         style="background:linear-gradient(135deg,#ef6c00,#ff9800); border-radius:15px;">
 
         <div class="d-flex justify-content-between align-items-center">
 
             <div>
-                <h2 class="fw-bold mb-0">
-                    {{ $stats['courses'] }}
-                </h2>
+                <h2 class="fw-bold mb-0">{{ $stats['courses'] }}</h2>
                 <small>Active Courses</small>
             </div>
 
@@ -81,20 +75,36 @@
     </div>
 </div>
 
-<div class="col-lg-3 col-md-6">
-    <div class="stat-card p-4 text-white"
-         style="background:linear-gradient(135deg,#6a1b9a,#ab47bc);">
+<div class="col">
+    <div class="stat-card p-4 text-white h-100"
+         style="background:linear-gradient(135deg,#6a1b9a,#ab47bc); border-radius:15px;">
 
         <div class="d-flex justify-content-between align-items-center">
 
             <div>
-                <h2 class="fw-bold mb-0">
-                    ৳{{ number_format($stats['fee_due']) }}
-                </h2>
+                <h2 class="fw-bold mb-0">৳{{ number_format($stats['fee_due']) }}</h2>
                 <small>Fee Due</small>
             </div>
 
             <i class="bi bi-cash-stack fs-1"></i>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="col">
+    <div class="stat-card p-4 text-white h-100"
+         style="background:linear-gradient(135deg,#c2185b,#ec407a); border-radius:15px;">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+                <h2 class="fw-bold mb-0">{{ $stats['results'] }}</h2>
+                <small>Total Results</small>
+            </div>
+
+            <i class="bi bi-bar-chart-line-fill fs-1"></i>
 
         </div>
 
@@ -106,7 +116,7 @@
 
 <!-- Quick Actions -->
 
-<div class="card p-4 mb-4">
+<div class="card shadow-sm border-0 p-4 mb-4">
 
 
 <h5 class="fw-bold mb-3">
@@ -125,26 +135,26 @@
     </div>
 
     <div class="col-md-3">
-        <a href="{{ route('departments.create') }}"
+        <a href="{{ route('teachers.create') }}"
            class="btn btn-success w-100">
-            <i class="bi bi-building-add"></i>
-            Add Department
+            <i class="bi bi-person-workspace"></i>
+            Add Teacher
         </a>
     </div>
 
     <div class="col-md-3">
-        <a href="{{ route('students.index') }}"
-           class="btn btn-info w-100 text-white">
-            <i class="bi bi-people-fill"></i>
-            View Students
+        <a href="{{ route('courses.create') }}"
+           class="btn btn-warning text-white w-100">
+            <i class="bi bi-book-fill"></i>
+            Add Course
         </a>
     </div>
 
     <div class="col-md-3">
-        <a href="{{ route('reports.index') }}"
-           class="btn btn-dark w-100">
-            <i class="bi bi-file-earmark-bar-graph"></i>
-            Reports
+        <a href="{{ route('results.create') }}"
+           class="btn btn-danger w-100">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            Add Result
         </a>
     </div>
 
@@ -157,9 +167,10 @@
 
 
 <!-- Attendance -->
+
 <div class="col-lg-4">
 
-    <div class="card p-4 h-100">
+    <div class="card shadow-sm border-0 p-4 h-100">
 
         <h5 class="fw-bold mb-3">
             <i class="bi bi-calendar-check"></i>
@@ -203,9 +214,10 @@
 </div>
 
 <!-- Notices -->
+
 <div class="col-lg-8">
 
-    <div class="card p-4 h-100">
+    <div class="card shadow-sm border-0 p-4 h-100">
 
         <h5 class="fw-bold mb-3">
             <i class="bi bi-megaphone-fill"></i>
@@ -221,7 +233,7 @@
                 </div>
 
                 <small class="text-muted">
-                    {{ $notice->publish_date->format('d M Y') }}
+                    {{ \Carbon\Carbon::parse($notice->publish_date)->format('d M Y') }}
                 </small>
 
             </div>
@@ -235,6 +247,77 @@
         @endforelse
 
     </div>
+
+</div>
+
+
+</div>
+
+<!-- Recent Results -->
+
+<div class="card shadow-sm border-0 p-4 mt-4">
+
+
+<h5 class="fw-bold mb-3">
+    <i class="bi bi-award-fill text-primary"></i>
+    Recent Results
+</h5>
+
+<div class="table-responsive">
+
+    <table class="table table-hover align-middle">
+
+        <thead class="table-light">
+
+            <tr>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Total Marks</th>
+                <th>Grade</th>
+                <th>GPA</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        @forelse($recent_results as $result)
+
+            <tr>
+
+                <td>{{ $result->student->name }}</td>
+
+                <td>{{ $result->course->name }}</td>
+
+                <td>{{ $result->total_marks }}</td>
+
+                <td>
+                    <span class="badge bg-success">
+                        {{ $result->grade }}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge bg-primary">
+                        {{ $result->gpa }}
+                    </span>
+                </td>
+
+            </tr>
+
+        @empty
+
+            <tr>
+                <td colspan="5" class="text-center">
+                    No Results Available
+                </td>
+            </tr>
+
+        @endforelse
+
+        </tbody>
+
+    </table>
 
 </div>
 

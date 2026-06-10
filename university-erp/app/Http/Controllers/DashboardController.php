@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\FeeInvoice;
 use App\Models\Notice;
 use App\Models\Attendance;
+use App\Models\Result;
 
 class DashboardController extends Controller
 {
@@ -20,12 +21,28 @@ class DashboardController extends Controller
             'fee_due'       => FeeInvoice::sum('due_amount'),
             'today_present' => Attendance::where('status', 'present')->count(),
             'today_absent'  => Attendance::where('status', 'absent')->count(),
+            'results'       => Result::count(),
         ];
 
-        $recent_notices = Notice::latest()->take(5)->get();
+        $recent_notices = Notice::latest()
+            ->take(5)
+            ->get();
 
-        return view('dashboard', compact('stats', 'recent_notices'));
-        
-        $recent_students = Student::latest()->take(5)->get();
+        $recent_results = Result::with([
+                'student',
+                'course'
+            ])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view(
+            'dashboard',
+            compact(
+                'stats',
+                'recent_notices',
+                'recent_results'
+            )
+        );
     }
 }
