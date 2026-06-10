@@ -261,6 +261,14 @@
             Attendance
         </a>
 
+        <a href="{{ route('enrollments.index') }}"
+            class="nav-link {{ request()->routeIs('enrollments.*') ? 'active' : '' }}">
+
+            <i class="bi bi-journal-check"></i>
+            Enrollments
+
+        </a>
+
         <a href="{{ route('results.index') }}"
            class="nav-link {{ request()->routeIs('results.*') ? 'active' : '' }}">
             <i class="bi bi-bar-chart-line"></i>

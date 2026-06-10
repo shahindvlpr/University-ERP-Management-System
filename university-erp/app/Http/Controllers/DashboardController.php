@@ -9,6 +9,7 @@ use App\Models\FeeInvoice;
 use App\Models\Notice;
 use App\Models\Attendance;
 use App\Models\Result;
+use App\Models\Enrollment;
 
 class DashboardController extends Controller
 {
@@ -22,6 +23,7 @@ class DashboardController extends Controller
             'today_present' => Attendance::where('status', 'present')->count(),
             'today_absent'  => Attendance::where('status', 'absent')->count(),
             'results'       => Result::count(),
+            'enrollments' => Enrollment::count(),
         ];
 
         $recent_notices = Notice::latest()
