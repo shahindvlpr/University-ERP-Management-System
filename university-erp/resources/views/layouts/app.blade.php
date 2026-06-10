@@ -282,6 +282,47 @@
             Routine
 
         </a>
+        <a href="{{ route('books.index') }}"
+        class="nav-link {{ request()->routeIs('books.*') ? 'active' : '' }}">
+
+            <i class="bi bi-book-half"></i>
+            Library Books
+
+        </a>
+
+
+<a href="{{ route('book-issues.index') }}"
+   class="nav-link">
+
+    <i class="bi bi-journal-check"></i>
+    Book Issues
+
+</a>
+<a href="{{ route('exams.index') }}"
+   class="nav-link {{ request()->routeIs('exams.*') ? 'active' : '' }}">
+
+    <i class="bi bi-journal-text"></i>
+    Exams
+
+</a>
+<a href="{{ route('exam-marks.index') }}"
+   class="nav-link">
+
+    <i class="bi bi-pencil-square"></i>
+
+    Exam Marks
+
+</a>
+
+
+
+
+
+
+
+
+
+
 
         @endrole
 

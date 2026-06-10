@@ -10,6 +10,7 @@ use App\Models\Notice;
 use App\Models\Attendance;
 use App\Models\Result;
 use App\Models\Enrollment;
+use App\Models\Book;
 
 class DashboardController extends Controller
 {
@@ -24,6 +25,7 @@ class DashboardController extends Controller
             'today_absent'  => Attendance::where('status', 'absent')->count(),
             'results'       => Result::count(),
             'enrollments' => Enrollment::count(),
+            'books' => Book::count(),
         ];
 
         $recent_notices = Notice::latest()

@@ -13,6 +13,11 @@ use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\RoutineController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookIssueController;
+use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamMarkController;
+
 
 // Auth
 Route::get('/',      [LoginController::class, 'showLogin'])->name('login');
@@ -38,6 +43,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('reports/results/pdf', [ReportController::class, 'resultsPdf'])->name('reports.results.pdf');
         Route::resource('enrollments',EnrollmentController::class);
         Route::resource('routines', RoutineController::class);
+        Route::resource('books', BookController::class);
+        Route::resource('book-issues',BookIssueController::class);
+        Route::resource('exams', ExamController::class);
+        Route::resource('exam-marks',ExamMarkController::class);
     });
 
     // Admin + Teacher

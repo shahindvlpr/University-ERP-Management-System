@@ -48,4 +48,21 @@ class Course extends Model
 {
     return $this->hasMany(Routine::class);
 }
+
+public function exams()
+{
+    return $this->hasMany(Exam::class);
+}
+public function examMarks()
+{
+    return $this->hasMany(ExamMark::class);
+}
+
+
+
+
+
+
+
+
 }
