@@ -2,63 +2,101 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NoticeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $notices = Notice::with('user')
+
+            ->when($request->search, function ($query) use ($request) {
+
+                $query->where('title', 'like', '%' . $request->search . '%')
+                      ->orWhere('category', 'like', '%' . $request->search . '%');
+
+            })
+
+            ->latest()
+            ->paginate(10);
+
+        return view('notices.index', compact('notices'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('notices.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title'        => 'required',
+            'content'      => 'required',
+            'category'     => 'required',
+            'audience'     => 'required',
+            'publish_date' => 'required|date',
+        ]);
+
+        Notice::create([
+            'user_id'      => Auth::id(),
+            'title'        => $request->title,
+            'content'      => $request->content,
+            'category'     => $request->category,
+            'audience'     => $request->audience,
+            'is_published' => $request->has('is_published'),
+            'publish_date' => $request->publish_date,
+            'expire_date'  => $request->expire_date,
+        ]);
+
+        return redirect()
+            ->route('notices.index')
+            ->with('success', 'Notice Added Successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Notice $notice)
     {
-        //
+        return view('notices.show', compact('notice'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Notice $notice)
     {
-        //
+        return view('notices.edit', compact('notice'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Notice $notice)
     {
-        //
+        $request->validate([
+            'title'        => 'required',
+            'content'      => 'required',
+            'category'     => 'required',
+            'audience'     => 'required',
+            'publish_date' => 'required|date',
+        ]);
+
+        $notice->update([
+            'title'        => $request->title,
+            'content'      => $request->content,
+            'category'     => $request->category,
+            'audience'     => $request->audience,
+            'is_published' => $request->has('is_published'),
+            'publish_date' => $request->publish_date,
+            'expire_date'  => $request->expire_date,
+        ]);
+
+        return redirect()
+            ->route('notices.index')
+            ->with('success', 'Notice Updated Successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Notice $notice)
     {
-        //
+        $notice->delete();
+
+        return redirect()
+            ->route('notices.index')
+            ->with('success', 'Notice Deleted Successfully');
     }
 }
