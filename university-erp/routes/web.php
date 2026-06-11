@@ -1,5 +1,7 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
@@ -21,87 +23,162 @@ use App\Http\Controllers\TranscriptController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\StudentPortalController;
 
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
 
-// Auth
-Route::get('/',      [LoginController::class, 'showLogin'])->name('login');
-Route::post('/login',[LoginController::class, 'login']);
-Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
+Route::get('/', [LoginController::class, 'showLogin'])
+    ->name('login');
 
-Route::get(
-    '/transcripts',
-    [TranscriptController::class,'index']
-)->name('transcripts.index');
+Route::post('/login', [LoginController::class, 'login']);
 
-Route::get(
-    '/transcripts/{student}',
-    [TranscriptController::class,'show']
-)->name('transcripts.show');
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
 
-// Protected Routes
+/*
+|--------------------------------------------------------------------------
+| Protected Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Dashboard
+    |--------------------------------------------------------------------------
+    */
 
-    // Admin only
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transcript
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/transcripts', [TranscriptController::class, 'index'])
+        ->name('transcripts.index');
+
+    Route::get('/transcripts/{student}', [TranscriptController::class, 'show'])
+        ->name('transcripts.show');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Routes
+    |--------------------------------------------------------------------------
+    */
+
     Route::middleware(['role:admin'])->group(function () {
+
         Route::resource('departments', DepartmentController::class);
+
         Route::resource('students', StudentController::class);
+
         Route::resource('teachers', TeacherController::class);
+
         Route::resource('courses', CourseController::class);
+
         Route::resource('notices', NoticeController::class);
+
         Route::resource('fees', FeeController::class);
-        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-        Route::get('reports/students/pdf', [ReportController::class, 'studentsPdf'])->name('reports.students.pdf');
-        Route::get('reports/fees/pdf', [ReportController::class, 'feesPdf'])->name('reports.fees.pdf');
-        Route::get('reports/results/pdf', [ReportController::class, 'resultsPdf'])->name('reports.results.pdf');
-        Route::resource('enrollments',EnrollmentController::class);
+
+        Route::resource('enrollments', EnrollmentController::class);
+
         Route::resource('routines', RoutineController::class);
+
         Route::resource('books', BookController::class);
-        Route::resource('book-issues',BookIssueController::class);
+
+        Route::resource('book-issues', BookIssueController::class);
+
         Route::resource('exams', ExamController::class);
-        Route::resource('exam-marks',ExamMarkController::class);
-        Route::resource('certificates',CertificateController::class);
+
+        Route::resource('exam-marks', ExamMarkController::class);
+
+        Route::resource('certificates', CertificateController::class);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reports
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/reports', [ReportController::class, 'index'])
+            ->name('reports.index');
+
+        Route::get('/reports/students/pdf', [ReportController::class, 'studentsPdf'])
+            ->name('reports.students.pdf');
+
+        Route::get('/reports/fees/pdf', [ReportController::class, 'feesPdf'])
+            ->name('reports.fees.pdf');
+
+        Route::get('/reports/results/pdf', [ReportController::class, 'resultsPdf'])
+            ->name('reports.results.pdf');
     });
 
-    // Admin + Teacher
+    /*
+    |--------------------------------------------------------------------------
+    | Admin + Teacher Routes
+    |--------------------------------------------------------------------------
+    */
+
     Route::middleware(['role:admin|teacher'])->group(function () {
+
         Route::resource('attendance', AttendanceController::class);
+
         Route::resource('results', ResultController::class);
+
     });
 
-Route::middleware(['auth'])
-->group(function () {
 
-    Route::get(
-        '/student/dashboard',
-        [StudentPortalController::class,'dashboard']
-    )->name('student.dashboard');
+/*
+|--------------------------------------------------------------------------
+| Student Portal
+|--------------------------------------------------------------------------
+*/
 
-});
+Route::middleware(['role:admin|student'])
+    ->prefix('student')
+    ->group(function () {
 
-Route::get(
-    '/student/attendance',
-    [StudentPortalController::class,'attendance']
-)->name('student.attendance');
+        Route::get(
+            '/dashboard',
+            [StudentPortalController::class, 'dashboard']
+        )->name('student.dashboard');
 
-Route::get(
-    '/student/results',
-    [StudentPortalController::class,'results']
-)->name('student.results');
+        Route::get(
+            '/attendance',
+            [StudentPortalController::class, 'attendance']
+        )->name('student.attendance');
 
-Route::get(
-    '/student/courses',
-    [StudentPortalController::class,'courses']
-)->name('student.courses');
+        Route::get(
+            '/results',
+            [StudentPortalController::class, 'results']
+        )->name('student.results');
 
-Route::get(
-    '/student/fees',
-    [StudentPortalController::class,'fees']
-)->name('student.fees');
+        Route::get(
+            '/courses',
+            [StudentPortalController::class, 'courses']
+        )->name('student.courses');
 
-Route::get(
-    '/student/transcript',
-    [StudentPortalController::class,'transcript']
-)->name('student.transcript');
+        Route::get(
+            '/fees',
+            [StudentPortalController::class, 'fees']
+        )->name('student.fees');
+
+        Route::get(
+            '/transcript',
+            [StudentPortalController::class, 'transcript']
+        )->name('student.transcript');
+
+        Route::get(
+            '/notices',
+            [StudentPortalController::class, 'notices']
+        )->name('student.notices');
+
+    });
 
 });
