@@ -41,7 +41,9 @@ class LoginController extends Controller
             // Teacher Login
             if ($user->hasRole('teacher'))
             {
-                return redirect()->route('dashboard');
+                return redirect()->route(
+                    'teacher.dashboard'
+                );
             }
 
             // Admin Login

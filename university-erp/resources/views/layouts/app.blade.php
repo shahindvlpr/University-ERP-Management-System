@@ -463,7 +463,12 @@
            class="nav-link {{ request()->routeIs('student.*') ? 'active' : '' }}">
             <i class="bi bi-person-circle"></i> Student Portal
         </a>
-
+@hasanyrole('admin|teacher')
+<a href="{{ route('teacher.dashboard') }}"
+   class="nav-link {{ request()->routeIs('teacher.*') ? 'active' : '' }}">
+    <i class="bi bi-person-workspace"></i> Teacher Portal
+</a>
+@endhasanyrole
         @endrole
 
     </div>
