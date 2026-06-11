@@ -118,19 +118,20 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
 
-    Route::middleware(['role:admin|student'])
-         ->prefix('student')
-         ->name('student.')
-         ->group(function () {
-             Route::get('/dashboard',  [StudentPortalController::class, 'dashboard']) ->name('dashboard');
-             Route::get('/courses',    [StudentPortalController::class, 'courses'])   ->name('courses');
-             Route::get('/attendance', [StudentPortalController::class, 'attendance'])->name('attendance');
-             Route::get('/results',    [StudentPortalController::class, 'results'])   ->name('results');
-             Route::get('/fees',       [StudentPortalController::class, 'fees'])      ->name('fees');
-             Route::get('/transcript', [StudentPortalController::class, 'transcript'])->name('transcript');
-             Route::get('/notices',    [StudentPortalController::class, 'notices'])   ->name('notices');
-         });
-
+    // Student Routes
+Route::middleware(['auth', 'role:admin|student'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/dashboard', [StudentPortalController::class, 'dashboard'])->name('dashboard');
+    Route::get('/courses', [StudentPortalController::class, 'courses'])->name('courses');
+    Route::get('/attendance', [StudentPortalController::class, 'attendance'])->name('attendance');
+    Route::get('/results', [StudentPortalController::class, 'results'])->name('results');
+    Route::get('/fees', [StudentPortalController::class, 'fees'])->name('fees');
+    Route::get('/routine', [StudentPortalController::class, 'routine'])->name('routine'); // Add this
+    Route::get('/library', [StudentPortalController::class, 'library'])->name('library'); // Add this
+    Route::get('/assignments', [StudentPortalController::class, 'assignments'])->name('assignments'); // Add this
+    Route::get('/transcript', [StudentPortalController::class, 'transcript'])->name('transcript');
+    Route::get('/notices', [StudentPortalController::class, 'notices'])->name('notices');
+    Route::get('/settings', [StudentPortalController::class, 'settings'])->name('settings');
+});
     /*
     |----------------------------------------------------------------------
     | Teacher Portal
