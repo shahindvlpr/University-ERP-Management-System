@@ -26,8 +26,29 @@ class Notice extends Model
         'is_published' => 'boolean'
     ];
 
+    // Relationship with User
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Scope for active notices
+    public function scopeActive($query)
+    {
+        return $query->where('is_published', true)
+                     ->where('publish_date', '<=', now())
+                     ->where(function($q) {
+                         $q->whereNull('expire_date')
+                           ->orWhere('expire_date', '>=', now());
+                     });
+    }
+
+    // Scope by audience
+    public function scopeForAudience($query, $audience)
+    {
+        return $query->where(function($q) use ($audience) {
+            $q->where('audience', 'all')
+              ->orWhere('audience', $audience);
+        });
     }
 }

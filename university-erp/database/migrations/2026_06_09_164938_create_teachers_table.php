@@ -6,34 +6,54 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-{
-    Schema::create('teachers', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->foreignId('department_id')->constrained()->onDelete('cascade');
-        $table->string('teacher_id')->unique();
-        $table->string('name');
-        $table->string('email')->unique();
-        $table->string('phone')->nullable();
-        $table->string('designation');
-        $table->string('specialization')->nullable();
-        $table->date('joining_date')->nullable();
-        $table->decimal('salary', 10, 2)->default(0);
-        $table->string('photo')->nullable();
-        $table->enum('status', ['active', 'inactive'])->default('active');
-        $table->timestamps();
-    });
-}
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function up()
     {
-        Schema::dropIfExists('teachers');
+        Schema::table('teachers', function (Blueprint $table) {
+            // Check and add columns only if they don't exist
+            if (!Schema::hasColumn('teachers', 'dob')) {
+                $table->date('dob')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'gender')) {
+                $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'qualification')) {
+                $table->text('qualification')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'address')) {
+                $table->text('address')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'bio')) {
+                $table->text('bio')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'blood_group')) {
+                $table->string('blood_group')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'emergency_contact')) {
+                $table->string('emergency_contact')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'national_id')) {
+                $table->string('national_id')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'website')) {
+                $table->string('website')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'linkedin')) {
+                $table->string('linkedin')->nullable();
+            }
+            if (!Schema::hasColumn('teachers', 'facebook')) {
+                $table->string('facebook')->nullable();
+            }
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('teachers', function (Blueprint $table) {
+            $table->dropColumn([
+                'dob', 'gender', 'qualification', 'address', 'bio',
+                'blood_group', 'emergency_contact', 'national_id',
+                'website', 'linkedin', 'facebook'
+            ]);
+        });
     }
 };
