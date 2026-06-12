@@ -19,9 +19,12 @@ class StudentPortalController extends Controller
     // }
 
     private function getStudent(): Student
-    {
-        return Student::first();
-    }
+{
+    return Student::where(
+        'user_id',
+        Auth::id()
+    )->firstOrFail();
+}
 
     // ── Dashboard ────────────────────────────────────────────────
     public function dashboard()

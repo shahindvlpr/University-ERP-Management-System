@@ -98,6 +98,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/attendance/excel', [ReportController::class, 'attendanceExcel'])->name('attendance.excel');
             Route::get('/marksheet',        [ReportController::class, 'marksheet'])   ->name('marksheet');
             Route::get('/invoice/{id}/pdf', [ReportController::class, 'invoicePdf'])  ->name('invoice.pdf');
+            Route::get('/export/excel', [StudentController::class, 'export'])->name('export');
+            Route::get('students/export/excel', [StudentController::class, 'export'])->name('students.export');
+
         });
     });
 
@@ -118,16 +121,18 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
 
-    // Student Routes
+// Student Routes
 Route::middleware(['auth', 'role:admin|student'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentPortalController::class, 'dashboard'])->name('dashboard');
     Route::get('/courses', [StudentPortalController::class, 'courses'])->name('courses');
+    Route::get('/courses/{id}', [StudentPortalController::class, 'courseDetails'])->name('course.details');
+    Route::get('/courses/{id}/materials', [StudentPortalController::class, 'courseMaterials'])->name('course.materials');
     Route::get('/attendance', [StudentPortalController::class, 'attendance'])->name('attendance');
     Route::get('/results', [StudentPortalController::class, 'results'])->name('results');
     Route::get('/fees', [StudentPortalController::class, 'fees'])->name('fees');
-    Route::get('/routine', [StudentPortalController::class, 'routine'])->name('routine'); // Add this
-    Route::get('/library', [StudentPortalController::class, 'library'])->name('library'); // Add this
-    Route::get('/assignments', [StudentPortalController::class, 'assignments'])->name('assignments'); // Add this
+    Route::get('/routine', [StudentPortalController::class, 'routine'])->name('routine');
+    Route::get('/library', [StudentPortalController::class, 'library'])->name('library');
+    Route::get('/assignments', [StudentPortalController::class, 'assignments'])->name('assignments');
     Route::get('/transcript', [StudentPortalController::class, 'transcript'])->name('transcript');
     Route::get('/notices', [StudentPortalController::class, 'notices'])->name('notices');
     Route::get('/settings', [StudentPortalController::class, 'settings'])->name('settings');
@@ -138,18 +143,45 @@ Route::middleware(['auth', 'role:admin|student'])->prefix('student')->name('stud
     |----------------------------------------------------------------------
     */
 
-    Route::middleware(['role:admin|teacher'])
-         ->prefix('teacher')
-         ->name('teacher.')
-         ->group(function () {
-             Route::get('/dashboard',  [TeacherPortalController::class, 'dashboard']) ->name('dashboard');
-             Route::get('/courses',    [TeacherPortalController::class, 'courses'])   ->name('courses');
-             Route::get('/students',   [TeacherPortalController::class, 'students'])  ->name('students');
-             Route::get('/attendance', [TeacherPortalController::class, 'attendance'])->name('attendance');
-             Route::get('/results',    [TeacherPortalController::class, 'results'])   ->name('results');
-             Route::get('/routine',    [TeacherPortalController::class, 'routine'])   ->name('routine');
-             Route::get('/notices',    [TeacherPortalController::class, 'notices'])   ->name('notices');  // ← fix
-             Route::get('/profile',    [TeacherPortalController::class, 'profile'])   ->name('profile');
-         });
+    Route::middleware(['auth', 'role:admin|teacher'])->prefix('teacher')->name('teacher.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [TeacherPortalController::class, 'dashboard'])->name('dashboard');
+    
+    // Course Management
+    Route::get('/courses', [TeacherPortalController::class, 'courses'])->name('courses');
+    Route::get('/courses/{id}', [TeacherPortalController::class, 'courseDetails'])->name('course.details');
+    
+    // Student Management
+    Route::get('/students', [TeacherPortalController::class, 'students'])->name('students');
+    Route::get('/students/{id}', [TeacherPortalController::class, 'studentDetails'])->name('student.details');
+    
+    // Routine
+    Route::get('/routine', [TeacherPortalController::class, 'routine'])->name('routine');
+    Route::post('/routine/create', [TeacherPortalController::class, 'createRoutine'])->name('routine.create');
+    
+    // Attendance
+    Route::get('/attendance', [TeacherPortalController::class, 'attendance'])->name('attendance');
+    Route::post('/attendance/mark', [TeacherPortalController::class, 'markAttendance'])->name('attendance.mark');
+    Route::get('/attendance/data', [TeacherPortalController::class, 'getAttendanceData'])->name('attendance.data');
+    
+    // Results
+    Route::get('/results', [TeacherPortalController::class, 'results'])->name('results');
+    Route::post('/results/upload', [TeacherPortalController::class, 'uploadResults'])->name('results.upload');
+    
+    // Assignments - ADD THESE ROUTES
+    Route::get('/assignments/create', [TeacherPortalController::class, 'createAssignment'])->name('assignments.create');
+    Route::post('/assignments/store', [TeacherPortalController::class, 'storeAssignment'])->name('assignments.store');
+    Route::get('/assignments/{id}/edit', [TeacherPortalController::class, 'editAssignment'])->name('assignments.edit');
+    Route::put('/assignments/{id}', [TeacherPortalController::class, 'updateAssignment'])->name('assignments.update');
+    Route::delete('/assignments/{id}', [TeacherPortalController::class, 'deleteAssignment'])->name('assignments.delete');
+    
+    // Notices
+    Route::get('/notices', [TeacherPortalController::class, 'notices'])->name('notices');
+    Route::post('/notices/create', [TeacherPortalController::class, 'createNotice'])->name('notices.create');
+    
+    // Profile
+    Route::get('/profile', [TeacherPortalController::class, 'profile'])->name('profile');
+    Route::put('/profile/update', [TeacherPortalController::class, 'updateProfile'])->name('profile.update');
+});
 
 });
