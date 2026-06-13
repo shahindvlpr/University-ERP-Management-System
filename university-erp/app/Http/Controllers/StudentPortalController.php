@@ -8,23 +8,17 @@ use App\Models\Attendance;
 use App\Models\Enrollment;
 use App\Models\FeeInvoice;
 use App\Models\Notice;
+use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class StudentPortalController extends Controller
 {
     // ── Helper: logged-in student ────────────────────────────────
-    // private function getStudent(): Student
-    // {
-    //     return Student::where('user_id', Auth::id())->firstOrFail();
-    // }
-
     private function getStudent(): Student
-{
-    return Student::where(
-        'user_id',
-        Auth::id()
-    )->firstOrFail();
-}
+    {
+        return Student::where('user_id', Auth::id())->firstOrFail();
+    }
 
     // ── Dashboard ────────────────────────────────────────────────
     public function dashboard()
@@ -40,18 +34,26 @@ class StudentPortalController extends Controller
         $totalAtt       = Attendance::where('student_id', $student->id)->count();
         $presentAtt     = Attendance::where('student_id', $student->id)
                                     ->where('status', 'present')->count();
-        $attendanceCount = $totalAtt;
-        $attendanceRate  = $totalAtt > 0
-                           ? round(($presentAtt / $totalAtt) * 100)
-                           : 0;
+        $attendanceCount = $presentAtt;
+        $attendanceRate  = $totalAtt > 0 ? round(($presentAtt / $totalAtt) * 100) : 0;
 
         // Results & CGPA
         $allResults  = Result::with('course')
                              ->where('student_id', $student->id)
                              ->latest()
                              ->get();
+        
+        // CGPA calculation based on credit hours
+        $totalPoints = 0;
+        $totalCredits = 0;
+        foreach($allResults as $result) {
+            $creditHours = $result->course->credit_hours ?? 3;
+            $totalPoints += ($result->gpa ?? 0) * $creditHours;
+            $totalCredits += $creditHours;
+        }
+        $cgpa = $totalCredits > 0 ? round($totalPoints / $totalCredits, 2) : 0;
+        
         $resultCount   = $allResults->count();
-        $cgpa          = $allResults->avg('gpa') ?? 0;
         $recentResults = $allResults->take(4);
 
         // Fees
@@ -60,13 +62,21 @@ class StudentPortalController extends Controller
                              ->sum('due_amount');
         $feePaid = FeeInvoice::where('student_id', $student->id)
                              ->sum('paid_amount');
+        
+        // Completed Courses Count
+        $completedCoursesCount = Enrollment::where('student_id', $student->id)
+                                           ->where('status', 'completed')
+                                           ->count();
 
         // Notices (for students or all)
         $notices = Notice::where('is_published', true)
                          ->whereIn('audience', ['all', 'students'])
                          ->latest()
-                         ->take(4)
+                         ->take(5)
                          ->get();
+
+        // Upcoming Events (if you have events table)
+        $upcomingEvents = collect(); // Empty collection for now
 
         return view('student_portal.dashboard', compact(
             'student',
@@ -79,6 +89,8 @@ class StudentPortalController extends Controller
             'feeDue',
             'feePaid',
             'notices',
+            'completedCoursesCount',
+            'upcomingEvents'
         ));
     }
 
@@ -125,10 +137,20 @@ class StudentPortalController extends Controller
 
         // CGPA & grade breakdown
         $allResults = Result::where('student_id', $student->id)->get();
-        $cgpa       = round($allResults->avg('gpa') ?? 0, 2);
-        $highest    = $allResults->max('total_marks') ?? 0;
-        $lowest     = $allResults->min('total_marks') ?? 0;
-        $average    = round($allResults->avg('total_marks') ?? 0, 1);
+        
+        // Calculate CGPA with credit hours
+        $totalPoints = 0;
+        $totalCredits = 0;
+        foreach($allResults as $result) {
+            $creditHours = $result->course->credit_hours ?? 3;
+            $totalPoints += ($result->gpa ?? 0) * $creditHours;
+            $totalCredits += $creditHours;
+        }
+        $cgpa = $totalCredits > 0 ? round($totalPoints / $totalCredits, 2) : 0;
+        
+        $highest    = $allResults->max('marks') ?? 0;
+        $lowest     = $allResults->min('marks') ?? 0;
+        $average    = round($allResults->avg('marks') ?? 0, 1);
 
         return view('student_portal.results', compact(
             'student',
@@ -178,7 +200,7 @@ class StudentPortalController extends Controller
         $totalPaid   = FeeInvoice::where('student_id', $student->id)->sum('paid_amount');
         $totalDue    = FeeInvoice::where('student_id', $student->id)->sum('due_amount');
         $paidCount   = FeeInvoice::where('student_id', $student->id)->where('status', 'paid')->count();
-        $unpaidCount = FeeInvoice::where('student_id', $student->id)->where('status', 'unpaid')->count();
+        $unpaidCount = FeeInvoice::where('student_id', $student->id)->where('status', '!=', 'paid')->count();
         $paidRate    = $totalAmount > 0 ? round(($totalPaid / $totalAmount) * 100) : 0;
 
         return view('student_portal.fees', compact(
@@ -201,17 +223,24 @@ class StudentPortalController extends Controller
         // Group results by semester for clean transcript view
         $results = Result::with('course')
                          ->where('student_id', $student->id)
-                         ->orderBy('session')
-                         ->orderBy('semester')
+                         ->orderBy('created_at')
                          ->get()
-                         ->groupBy(fn($r) => $r->session . ' — Semester ' . $r->semester);
+                         ->groupBy(function($r) {
+                             return $r->semester ? 'Semester ' . $r->semester : 'General';
+                         });
 
-        $cgpa        = round(Result::where('student_id', $student->id)->avg('gpa') ?? 0, 2);
-        $totalCourses= Result::where('student_id', $student->id)->count();
-        $totalCredits= Result::with('course')
-                             ->where('student_id', $student->id)
-                             ->get()
-                             ->sum(fn($r) => $r->course->credit_hours ?? 0);
+        // Calculate CGPA
+        $allResults = Result::where('student_id', $student->id)->get();
+        $totalPoints = 0;
+        $totalCredits = 0;
+        foreach($allResults as $result) {
+            $creditHours = $result->course->credit_hours ?? 3;
+            $totalPoints += ($result->gpa ?? 0) * $creditHours;
+            $totalCredits += $creditHours;
+        }
+        $cgpa = $totalCredits > 0 ? round($totalPoints / $totalCredits, 2) : 0;
+        
+        $totalCourses = Result::where('student_id', $student->id)->count();
 
         return view('student_portal.transcript', compact(
             'student',
@@ -231,5 +260,62 @@ class StudentPortalController extends Controller
                          ->paginate(10);
 
         return view('student_portal.notices', compact('notices'));
+    }
+    
+    // ── Routine ──────────────────────────────────────────────────
+    public function routine()
+    {
+        $student = $this->getStudent();
+        
+        // Get enrolled courses routine
+        $enrolledCourses = Enrollment::where('student_id', $student->id)
+                                     ->where('status', 'enrolled')
+                                     ->pluck('course_id');
+        
+        $routines = \App\Models\Routine::with('course')
+                                       ->whereIn('course_id', $enrolledCourses)
+                                       ->orderByRaw("FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')")
+                                       ->orderBy('start_time')
+                                       ->get()
+                                       ->groupBy('day');
+        
+        return view('student_portal.routine', compact('routines', 'student'));
+    }
+    
+    // ── Library ──────────────────────────────────────────────────
+    public function library()
+    {
+        $student = $this->getStudent();
+        
+        // Get borrowed books
+        $borrowedBooks = $student->bookIssues()->where('status', 'borrowed')->get();
+        
+        return view('student_portal.library', compact('student', 'borrowedBooks'));
+    }
+    
+    // ── Assignments ──────────────────────────────────────────────
+    public function assignments()
+    {
+        $student = $this->getStudent();
+        
+        // Get assignments for enrolled courses
+        $enrolledCourses = Enrollment::where('student_id', $student->id)
+                                     ->where('status', 'enrolled')
+                                     ->pluck('course_id');
+        
+        $assignments = \App\Models\Assignment::with('course')
+                                             ->whereIn('course_id', $enrolledCourses)
+                                             ->where('due_date', '>=', now())
+                                             ->orderBy('due_date')
+                                             ->get();
+        
+        return view('student_portal.assignments', compact('student', 'assignments'));
+    }
+    
+    // ── Settings ─────────────────────────────────────────────────
+    public function settings()
+    {
+        $student = $this->getStudent();
+        return view('student_portal.settings', compact('student'));
     }
 }
