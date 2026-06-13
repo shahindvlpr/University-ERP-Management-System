@@ -22,7 +22,12 @@ class Student extends Model
         'photo',
         'session',
         'semester',
-        'status'
+        'status',
+        'blood_group'
+    ];
+
+    protected $casts = [
+        'date_of_birth' => 'date',
     ];
 
     public function user()
@@ -54,19 +59,36 @@ class Student extends Model
     {
         return $this->hasMany(FeeInvoice::class);
     }
+    
     public function bookIssues()
-{
-    return $this->hasMany(BookIssue::class);
-}
-public function certificates()
-{
-    return $this->hasMany(
-        Certificate::class
-    );
-}
-
-
-
-
-
+    {
+        return $this->hasMany(BookIssue::class);
+    }
+    
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+    
+    // Accessor for full name
+    public function getFullNameAttribute()
+    {
+        return $this->name;
+    }
+    
+    // Accessor for blood group display
+    public function getBloodGroupDisplayAttribute()
+    {
+        $bloodGroups = [
+            'A+' => 'A Positive',
+            'A-' => 'A Negative',
+            'B+' => 'B Positive',
+            'B-' => 'B Negative',
+            'O+' => 'O Positive',
+            'O-' => 'O Negative',
+            'AB+' => 'AB Positive',
+            'AB-' => 'AB Negative',
+        ];
+        return $bloodGroups[$this->blood_group] ?? $this->blood_group ?? 'N/A';
+    }
 }
